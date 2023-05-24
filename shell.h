@@ -126,10 +126,11 @@ int is_cmd(info_t *, char *);
 int loophsh(char **);
 
 /* toem_s_errors.c */
-void _eputs(char *);
-int _eputchar(char);
-int _putfd(char c, int fd);
-int _putsfd(char *str, int fd);
+void printErrorMessage(char *message);
+int writeToStderr(char c);
+int writeToFileDescriptor(char c, int fd);
+int printStringToFileDescriptor(char *str, int fd);
+
 
 /* toem_s_string.c */
 int _strlen(char *);
