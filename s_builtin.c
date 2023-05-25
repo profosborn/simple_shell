@@ -1,120 +1,97 @@
 #include "shell.h"
 
 /**
- * shellExit - exits the shell
+ * _myexit - exits the shell
  * @info: Structure containing potential arguments. Used to maintain
- * constant function prototype.
- * Return: exits with a given exit status
- * (0) if info->arguments[0] != "exit"
+ *          constant function prototype.
+ *  Return: exits with a given exit status
+ *         (0) if info.argv[0] != "exit"
  */
-int shellExit(info_t *info)
+int _myexit(info_t *info)
 {
-  int exitStatus;
-  
-  if (info->arguments[1]) /* If there is an exit argument */
-  {
-    exitStatus = safeAtoi(info->arguments[1]);
-    if (exitStatus == -1)
-    {
-      info->status = 2;
-      printError(info, "Illegal number: ");
-      printErrorMessage(info->arguments[1]);
-      printNewLine();
-      return (1);
-    }
-    info->errorNumber = safeAtoi(info->arguments[1]);
-    return (-2);
-  }
-  info->errorNumber = -1;
-  return (-2);
+	int exitcheck;
+
+	if (info->argv[1])  /* If there is an exit arguement */
+	{
+		exitcheck = _erratoi(info->argv[1]);
+		if (exitcheck == -1)
+		{
+			info->status = 2;
+			print_error(info, "Illegal number: ");
+			_eputs(info->argv[1]);
+			_eputchar('\n');
+			return (1);
+		}
+		info->err_num = _erratoi(info->argv[1]);
+		return (-2);
+	}
+	info->err_num = -1;
+	return (-2);
 }
 
 /**
- * handleChangeDirectory - Helper function for changeDirectory
+ * _mycd - changes the current directory of the process
  * @info: Structure containing potential arguments. Used to maintain
- * constant function prototype.
- * @currentDir: Current directory
- * @targetDir: Target directory
- * Return: chdir result
+ *          constant function prototype.
+ *  Return: Always 0
  */
-int handleChangeDirectory(info_t *info, char *currentDir, char *targetDir)
+int _mycd(info_t *info)
 {
-  int chdirResult;
-  
-  if (!info->arguments[1])
-  {
-    targetDir = getEnvironmentVariable(info, "HOME=");
-    if (!targetDir)
-      chdirResult = chdir((targetDir = getEnvironmentVariable(info, "PWD=")) ? targetDir : "/");
-    else
-      chdirResult = chdir(targetDir);
-  }
-  else if (safeStringCompare(info->arguments[1], "-") == 0)
-  {
-    if (!getEnvironmentVariable(info, "OLDPWD="))
-    {
-      printStandardOutput(currentDir);
-      printNewLine();
-      return (1);
-    }
-    printStandardOutput(getEnvironmentVariable(info, "OLDPWD="));
-    printNewLine();
-    chdirResult = chdir((targetDir = getEnvironmentVariable(info, "OLDPWD=")) ? targetDir : "/");
-  }
-  else
-    chdirResult = chdir(info->arguments[1]);
+	char *s, *dir, buffer[1024];
+	int chdir_ret;
 
-  return chdirResult;
+	s = getcwd(buffer, 1024);
+	if (!s)
+		_puts("TODO: >>getcwd failure emsg here<<\n");
+	if (!info->argv[1])
+	{
+		dir = _getenv(info, "HOME=");
+		if (!dir)
+			chdir_ret = /* TODO: what should this be? */
+				chdir((dir = _getenv(info, "PWD=")) ? dir : "/");
+		else
+			chdir_ret = chdir(dir);
+	}
+	else if (_strcmp(info->argv[1], "-") == 0)
+	{
+		if (!_getenv(info, "OLDPWD="))
+		{
+			_puts(s);
+			_putchar('\n');
+			return (1);
+		}
+		_puts(_getenv(info, "OLDPWD=")), _putchar('\n');
+		chdir_ret = /* TODO: what should this be? */
+			chdir((dir = _getenv(info, "OLDPWD=")) ? dir : "/");
+	}
+	else
+		chdir_ret = chdir(info->argv[1]);
+	if (chdir_ret == -1)
+	{
+		print_error(info, "can't cd to ");
+		_eputs(info->argv[1]), _eputchar('\n');
+	}
+	else
+	{
+		_setenv(info, "OLDPWD", _getenv(info, "PWD="));
+		_setenv(info, "PWD", getcwd(buffer, 1024));
+	}
+	return (0);
 }
 
 /**
- * changeDirectory - changes the current directory of the process
+ * _myhelp - changes the current directory of the process
  * @info: Structure containing potential arguments. Used to maintain
- * constant function prototype.
- * Return: Always 0
+ *          constant function prototype.
+ *  Return: Always 0
  */
-int changeDirectory(info_t *info)
+int _myhelp(info_t *info)
 {
-  char *currentDir, *targetDir, buffer[1024];
-  int chdirResult;
+	char **arg_array;
 
-  currentDir = getCWD(buffer, 1024);
-  if (!currentDir)
-  {
-    printStandardOutput("TODO: >>getcwd failure emsg here<<\n");
-    return (1);
-  }
-
-  chdirResult = handleChangeDirectory(info, currentDir, targetDir);
-
-  if (chdirResult == -1)
-  {
-    printError(info, "can't cd to ");
-    printErrorMessage(info->arguments[1]);
-    printNewLine();
-  }
-  else
-  {
-    setEnvironmentVariable(info, "OLDPWD", getEnvironmentVariable(info, "PWD="));
-    setEnvironmentVariable(info, "PWD", getCWD(buffer, 1024));
-  }
-
-  return (0);
-}
-
-/**
- * showHelp - displays help information
- * @info: Structure containing potential arguments. Used to maintain
- * constant function prototype.
- * Return: Always 0
- */
-int showHelp(info_t *info)
-{
-  char **argArray;
-
-  argArray = info->arguments;
-  printStandardOutput("help call works. Function not yet implemented \n");
-  if (0)
-    printStandardOutput(*argArray); /* temp att_unused workaround */
-  return (0);
+	arg_array = info->argv;
+	_puts("help call works. Function not yet implemented \n");
+	if (0)
+		_puts(*arg_array); /* temp att_unused workaround */
+	return (0);
 }
