@@ -1,32 +1,32 @@
 #include "shell.h"
 
 /**
- * printErrorMessage - prints an error message
- * @message: the error message to be printed
+ * _eputs - Print  input string
+ * @str: string to be printed
  *
  * Return: Nothing
  */
-void printErrorMessage(char *message)
+void _eputs(char *str)
 {
 	int i = 0;
 
-	if (!message)
+	if (!str)
 		return;
-	while (message[i] != '\0')
+	while (str[i] != '\0')
 	{
-		writeToStderr(message[i]);
+		_eputchar(str[i]);
 		i++;
 	}
 }
 
 /**
- * writeToStderr - writes the character c to stderr
- * @c: The character to print
+ * _eputchar - Writes the character c to stderr
+ * @c: Character to print
  *
- * Return: On success 1.
- * On error, -1 is returned, and errno is set appropriately.
+ * Return: On success 1
+  * On error: -1 is returned, and errno is set appropriately.
  */
-int writeToStderr(char c)
+int _eputchar(char c)
 {
 	static int i;
 	static char buf[WRITE_BUF_SIZE];
@@ -42,14 +42,14 @@ int writeToStderr(char c)
 }
 
 /**
- * writeToFileDescriptor - writes the character c to the given file descriptor
- * @c: The character to print
- * @fd: The file descriptor to write to
+ * _putfd - Write character c to given fd
+ * @c:  Character to print
+ * @fd: File descriptor to write to
  *
  * Return: On success 1.
- * On error, -1 is returned, and errno is set appropriately.
+ * On error: -1 is returned, and errno is set appropriately.
  */
-int writeToFileDescriptor(char c, int fd)
+int _putfd(char c, int fd)
 {
 	static int i;
 	static char buf[WRITE_BUF_SIZE];
@@ -65,22 +65,21 @@ int writeToFileDescriptor(char c, int fd)
 }
 
 /**
- * printStringToFileDescriptor - prints an input string to
- * the given file descriptor
- * @str: string to be printed
- * @fd: the file descriptor to write to
+ * _putsfd - Prints an input string
+ * @str:  String to be printed
+ * @fd: File descriptor to write to
  *
- * Return: the number of chars put
+ * Return: number of chars put
  */
-int printStringToFileDescriptor(char *str, int fd)
+int _putsfd(char *str, int fd)
 {
-	int count = 0;
+	int i = 0;
 
 	if (!str)
 		return (0);
 	while (*str)
 	{
-		count += writeToFileDescriptor(*str++, fd);
+		i += _putfd(*str++, fd);
 	}
-	return (count);
+	return (i);
 }
