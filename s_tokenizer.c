@@ -64,7 +64,7 @@ char **strtow2(char *str, char d)
 	for (i = 0; str[i] != '\0'; i++)
 		if ((str[i] != d && str[i + 1] == d) ||
 				    (str[i] != d && !str[i + 1]) || str[i + 1] == d)
-			numwords;
+			numwords++;
 
 	if (numwords == 0)
 		return (NULL);
